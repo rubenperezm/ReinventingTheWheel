@@ -1,25 +1,30 @@
 import argparse
 import socket
 
-def start_server(port=8080):
-    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server_socket.bind(('127.0.0.1', port))
-    server_socket.listen(5)
-    print(f"Listening on port {port}...")
+class BackendServer:
+    def __init__(self, port):
+        self.port = port
+        self.start_server()
+    
+    def start_server(self):
+        server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        server_socket.bind(('127.0.0.1', self.port))
+        server_socket.listen(5)
+        print(f"Listening on port {self.port}...")
 
-    while True:
-        client_socket, address = server_socket.accept()
+        while True:
+            client_socket, address = server_socket.accept()
 
-        print(f"Received request from {address[0]}")
+            print(f"Received request from {address[0]}")
 
-        data = client_socket.recv(1024).decode()
-        print(data)
+            data = client_socket.recv(1024).decode()
+            print(data)
 
-        message = f"HTTP/1.1 200 OK\n\nHello from the Backend Server on port {port}!"
-        client_socket.sendall(message.encode())
-        print("Replied with a hello message")
+            message = f"HTTP/1.1 200 OK\n\nHello from the Backend Server on port {self.port}!"
+            client_socket.sendall(message.encode())
+            print("Replied with a hello message")
 
-        client_socket.close()
+            client_socket.close()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -34,4 +39,4 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    start_server(args.port)
+    BackendServer(args.port)
